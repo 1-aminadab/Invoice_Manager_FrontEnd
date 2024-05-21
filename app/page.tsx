@@ -1,3 +1,4 @@
+'use client'
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -75,8 +76,34 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "./components/ui/tooltip"
+import FromTo from "./(pages)/home/from-to"
+import html2pdf from 'html2pdf.js';
+import XLSX from 'xlsx';
+import { useState } from "react"
+import { jsPDF } from 'jspdf';
 
-export default function HomeMain(){
+export default function HomeMain() {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const generatePdf = () => {
+    const doc = new jsPDF();
+    const content:any = document.getElementById('content-to-convert')?.innerHTML;
+     // Replace with your content selector
+    doc.text(content, 10, 10);
+    doc.save('my-component.pdf');
+  };
+  const handleDownloadAsPDF = () => {
+    const element = document.getElementById('content-to-download');
+    html2pdf(element);
+  };
+
+  const handleDownloadAsExcel = () => {
+    const element = document.getElementById('content-to-download');
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.table_to_sheet(element);
+    XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
+    XLSX.writeFile(workbook, 'data.xlsx');
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -241,11 +268,11 @@ export default function HomeMain(){
 
           </Breadcrumb>
           <Link href="/signin">
-        <button>Sign In</button>
-      </Link>
-      <Link href="/signup">
-        <Button>Sign Up</Button>
-      </Link>
+            <button>Sign In</button>
+          </Link>
+          <Link href="/signup">
+            <Button>Sign Up</Button>
+          </Link>
           <div className="relative ml-auto flex-1 md:grow-0">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -329,9 +356,12 @@ export default function HomeMain(){
             <Tabs defaultValue="week">
               <div className="flex items-center">
                 <TabsList>
-                  <TabsTrigger value="week">Week</TabsTrigger>
-                  <TabsTrigger value="month">Month</TabsTrigger>
-                  <TabsTrigger value="year">Year</TabsTrigger>
+                  <TabsTrigger className="data-[state=active]:bg-white" value="from">From/To</TabsTrigger>
+                  <TabsTrigger className="data-[state=active]:bg-white" value="detail">Invoice Detail</TabsTrigger>
+                  <TabsTrigger className="data-[state=active]:bg-white" value="line">Line Item</TabsTrigger>
+                  <TabsTrigger className="data-[state=active]:bg-white" value="payment">Payment Info</TabsTrigger>
+                  <TabsTrigger className="data-[state=active]:bg-white" value="summery">Summery</TabsTrigger>
+
                 </TabsList>
                 <div className="ml-auto flex items-center gap-2">
                   <DropdownMenu>
@@ -369,7 +399,10 @@ export default function HomeMain(){
                   </Button>
                 </div>
               </div>
-              <TabsContent value="week">
+              <TabsContent value="from">
+                <FromTo />
+              </TabsContent>
+              <TabsContent value="detail">
                 <Card x-chunk="dashboard-05-chunk-3">
                   <CardHeader className="px-7">
                     <CardTitle>Orders</CardTitle>
@@ -563,11 +596,14 @@ export default function HomeMain(){
             </Tabs>
           </div>
           <div>
+          <button onClick={generatePdf}>Download PDF</button>
+
             <Card
+              id="my-component.pdf"
               className="overflow-hidden" x-chunk="dashboard-05-chunk-4"
             >
               <CardHeader className="flex flex-row items-start bg-muted/50">
-                <div className="grid gap-0.5">
+                <div className="grid gap-0.5" >
                   <CardTitle className="group flex items-center gap-2 text-lg">
                     Order Oe31b70H
                     <Button
@@ -605,7 +641,7 @@ export default function HomeMain(){
                 </div>
               </CardHeader>
               <CardContent className="p-6 text-sm">
-                <div className="grid gap-3">
+                <div className="grid gap-3"  id="content-to-download">
                   <div className="font-semibold">Order Details</div>
                   <ul className="grid gap-3">
                     <li className="flex items-center justify-between">
