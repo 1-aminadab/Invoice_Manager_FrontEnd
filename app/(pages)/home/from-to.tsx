@@ -19,7 +19,7 @@ import {
   
   import { Badge } from "../../components/ui/badge"
   import { Button } from "../../components/ui/button"
- 
+ import { Card } from "@/app/components/ui/card"
   import { Input } from "../../components/ui/input"
   import { Label } from "../../components/ui/label"
 
@@ -34,6 +34,7 @@ import {
       <div className="grid h-screen w-full pl-[56px]">
     
                 <form className="grid lg:grid-cols-2 w-full items-start gap-6 overflow-auto p-4 pt-0">
+                  <Card>
                   <fieldset className="grid gap-6 rounded-lg border p-4">
                     <legend className="-ml-1 px-1 text-sm font-medium">
                       From
@@ -52,6 +53,8 @@ import {
                       <Input id="top-k" type="number" placeholder="0.0" />
                     </div>
                   </fieldset>
+                  </Card>
+                  <Card>
                   <fieldset className="grid gap-6 rounded-lg border p-4">
                     <legend className="-ml-1 px-1 text-sm font-medium">
                       To
@@ -69,6 +72,7 @@ import {
                       <Input id="top-k" type="number" placeholder="0.0" />
                     </div>
                   </fieldset>
+                  </Card>
                 </form>
               
       </div>
