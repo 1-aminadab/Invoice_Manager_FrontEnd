@@ -7,6 +7,7 @@ import {
   Copy,
   CreditCard,
   File,
+  FileClock,
   Home,
   LineChart,
   ListFilter,
@@ -81,6 +82,8 @@ import html2pdf from 'html2pdf.js';
 import XLSX from 'xlsx';
 import { useState } from "react"
 import { jsPDF } from 'jspdf';
+import PaymentForm from "./(pages)/product/components/PaymentFrom"
+import InvoiceForm from "./(pages)/product/components/InvoiceItems"
 
 export default function HomeMain() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -145,7 +148,7 @@ export default function HomeMain() {
                 href="#"
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
-                <Package className="h-5 w-5" />
+                <FileClock  className="h-5 w-5" />
                 <span className="sr-only">Products</span>
               </Link>
             </TooltipTrigger>
@@ -160,8 +163,8 @@ export default function HomeMain() {
                 <Users2 className="h-5 w-5" />
                 <span className="sr-only">Customers</span>
               </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Customers</TooltipContent>
+              <FileClock />
+            <TooltipContent side="right">Product</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -169,8 +172,8 @@ export default function HomeMain() {
                 href="#"
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
-                <LineChart className="h-5 w-5" />
-                <span className="sr-only">Analytics</span>
+                <FileClock  className="h-5 w-5" />
+                <span className="sr-only">History</span>
               </Link>
             </TooltipTrigger>
             <TooltipContent side="right">Analytics</TooltipContent>
@@ -401,6 +404,12 @@ export default function HomeMain() {
               </div>
               <TabsContent value="from">
                 <FromTo />
+              </TabsContent>
+              <TabsContent value="payment">
+                <PaymentForm/>
+              </TabsContent>
+              <TabsContent value="line">
+                <InvoiceForm/>
               </TabsContent>
               <TabsContent value="detail">
                 <Card x-chunk="dashboard-05-chunk-3">
