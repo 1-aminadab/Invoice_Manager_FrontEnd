@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/app/components/ui/button';
-import { Select, SelectItem } from '@radix-ui/react-select';
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Card, CardHeader } from '@/app/components/ui/card';
 import { Textarea } from '@/app/components/ui/text-area';
-import { SelectContent } from '@/app/components/ui/select';
 
 // Dummy data for products
 const products = [
@@ -74,6 +73,11 @@ const InvoiceForm: React.FC = () => {
     ]);
   };
 
+  const getAvailableProducts = () => {
+    const selectedProductIds = items.map(item => item.product_id);
+    return products.filter(product => !selectedProductIds.includes(product.id));
+  };
+
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Invoice Items</h2>
@@ -85,19 +89,17 @@ const InvoiceForm: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Product</label>
-              <Select
-                value={item.product_id}
-                onValueChange={(value) => handleProductChange(index, parseInt(value))}
-              >
+              <Select onValueChange={(value) => handleProductChange(index, parseInt(value))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a product" />
+                </SelectTrigger>
                 <SelectContent>
-
-                
-                <SelectItem value={0}>Select a product</SelectItem>
-                {products.map(product => (
-                  <SelectItem key={product.id} value={product.id}>
-                    {product.name}
-                  </SelectItem>
-                ))}
+                  <SelectItem value={(0).toString()}>Select a product</SelectItem>
+                  {getAvailableProducts().map(product => (
+                    <SelectItem key={product.id} value={product.id.toString()}>
+                      {product.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

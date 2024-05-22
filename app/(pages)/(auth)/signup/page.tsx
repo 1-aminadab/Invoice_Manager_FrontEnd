@@ -102,7 +102,7 @@ useEffect(()=>{
                       width: "100%",
                       height: "100%",
                     }}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    onChange={(e:any) => setPhoneNumber(e.target.value)}
                   />
                 </div>
                 <div className="grid gap-2">
