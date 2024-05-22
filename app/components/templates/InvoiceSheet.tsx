@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useRef } from 'react'
 import { Button } from "../ui/button"
 import {
   Card,
@@ -12,19 +12,72 @@ import {
 } from "../ui/card"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
-import { ChevronLeft, ChevronRight, Copy, CreditCard, MoreVertical, Truck } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Copy, CreditCard, FileUp, MoreVertical, Truck } from 'lucide-react'
 import { Separator } from '../ui/separator'
 import { Pagination, PaginationContent, PaginationItem } from '../ui/pagination'
 
+import { useReactToPrint } from 'react-to-print';
+import * as XLSX from 'xlsx';
 
+interface PrintableProps {
+    content: React.ReactElement;
+  }
+
+  const data = {
+    billTo: [
+      { id: 1, name: "Customer A", address: "123 Main St, City A" },
+      { id: 2, name: "Customer B", address: "456 Oak St, City B" }
+    ],
+    billFrom: [
+      { id: 1, name: "Supplier X", address: "789 Pine St, City X" },
+      { id: 2, name: "Supplier Y", address: "101 Maple St, City Y" }
+    ],
+    items: [
+      { productId: 1, description: "Product 1", quantity: 10, price: 5.00 },
+      { productId: 2, description: "Product 2", quantity: 20, price: 15.00 }
+    ]
+  };
 function InvoiceSheet() {
+    // handle pdf downlaod 
+    const componentRef = useRef<HTMLDivElement>(null);
+    const handlePrint = useReactToPrint({
+      content: () => componentRef.current,
+    });
+  // handle excel download
+  const fileName = 'invoice';
+
+  // Create worksheets from the data
+  const itemsSheet = XLSX.utils.json_to_sheet(data.items, { header: ["productId", "description", "quantity", "price"] });
+  const billToSheet = XLSX.utils.json_to_sheet(data.billTo, { header: ["id", "name", "address"] });
+  const billFromSheet = XLSX.utils.json_to_sheet(data.billFrom, { header: ["id", "name", "address"] });
+  
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+  
+  // Append sheets to the workbook
+  XLSX.utils.book_append_sheet(workbook, billToSheet, 'Bill To');
+  XLSX.utils.book_append_sheet(workbook, billFromSheet, 'Bill From');
+  XLSX.utils.book_append_sheet(workbook, itemsSheet, 'Items');
+  
+  // Write the workbook to a buffer
+  const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+  
+  // Handle download
+  const handleDownload = () => {
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${fileName}.xlsx`;
+    link.click();
+  };
+  
+
+
   return (
     <Card
     id="my-component.pdf"
@@ -47,9 +100,9 @@ function InvoiceSheet() {
       </div>
       <div className="ml-auto flex items-center gap-1">
         <Button size="sm" variant="outline" className="h-8 gap-1">
-          <Truck className="h-3.5 w-3.5" />
+          <FileUp className="h-3.5 w-3.5" />
           <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
-            Track Order
+            Export as
           </span>
         </Button>
         <DropdownMenu>
@@ -60,15 +113,13 @@ function InvoiceSheet() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Export</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Trash</DropdownMenuItem>
+            <DropdownMenuItem className='cursor-pointer' onClick={handlePrint}>Pdf</DropdownMenuItem>
+            <DropdownMenuItem className='cursor-pointer' onClick={handleDownload}>Excel</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </CardHeader>
-    <CardContent className="p-6 text-sm">
+    <CardContent  ref={componentRef} className="p-6 text-sm">
       <div className="grid gap-3"  id="content-to-download">
         <div className="font-semibold">Order Details</div>
         <ul className="grid gap-3">

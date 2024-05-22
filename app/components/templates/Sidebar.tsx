@@ -66,56 +66,7 @@ function Sidebar() {
         </TooltipTrigger>
         <TooltipContent side="right">Orders</TooltipContent>
       </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Link
-            href="#"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-          >
-            <FileClock  className="h-5 w-5" />
-            <span className="sr-only">Products</span>
-          </Link>
-        </TooltipTrigger>
-        <TooltipContent side="right">Products</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        {/* <TooltipTrigger asChild> */}
-          <Link
-            href="#"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-          >
-            <Users2 className="h-5 w-5" />
-            <span className="sr-only">Customers</span>
-          </Link>
-          <FileClock />
-        <TooltipContent side="right">Product</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Link
-            href="#"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-          >
-            <FileClock  className="h-5 w-5" />
-            <span className="sr-only">History</span>
-          </Link>
-        </TooltipTrigger>
-        <TooltipContent side="right">Analytics</TooltipContent>
-      </Tooltip>
-    </nav>
-    <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Link
-            href="#"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-          >
-            <Settings className="h-5 w-5" />
-            <span className="sr-only">Settings</span>
-          </Link>
-        </TooltipTrigger>
-        <TooltipContent side="right">Settings</TooltipContent>
-      </Tooltip>
+     
     </nav>
   </aside>
   )
