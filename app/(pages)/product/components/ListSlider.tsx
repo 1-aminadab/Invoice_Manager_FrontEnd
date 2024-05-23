@@ -1,6 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react';
-import axios, { AxiosResponse } from 'axios'; // Import AxiosResponse
+import { useState } from 'react';
+import axios from 'axios'; // Import AxiosResponse
 import { Card, CardHeader, CardContent, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Slider } from '@/app/components/ui/slider';
@@ -21,10 +21,7 @@ const ListSlider: React.FC<ListSliderProps> = ({ endpoint, title }) => {
     const [items, setItems] = useState<ItemType[]>([]); // Set item type as ItemType[]
     const [refresh, setRefresh] = useState<boolean>(false); // Set refresh type as boolean
 
-    useEffect(() => {
-        axios.get<ItemType[]>(endpoint) // Use AxiosResponse with ItemType[] as response type
-            .then((response: AxiosResponse<ItemType[]>) => setItems(response.data)); // Set items as response.data
-    }, [refresh]);
+  
 
     const handleDelete = async (id: number) => {
         await axios.delete(`${endpoint}/${id}`);
