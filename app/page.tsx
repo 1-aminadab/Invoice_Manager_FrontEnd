@@ -29,7 +29,7 @@ import {
 
 import FromTo from "./(pages)/home/from-to"
 
-import XLSX from 'xlsx';
+
 import { useState } from "react"
 import { jsPDF } from 'jspdf';
 import PaymentForm from "./(pages)/product/components/PaymentFrom"
@@ -38,10 +38,8 @@ import CustomList from "./components/templates/List"
 import Sidebar from "./components/templates/Sidebar"
 import Navbar from "./components/templates/Navbar"
 import InvoiceSheet from "./components/templates/InvoiceSheet"
-import { File, ListFilter } from "lucide-react"
 
 export default function HomeMain() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const generatePdf = () => {
     const doc = new jsPDF();
     const content:any = document.getElementById('content-to-convert')?.innerHTML;
@@ -50,14 +48,6 @@ export default function HomeMain() {
     doc.save('my-component.pdf');
   };
  
-
-  const handleDownloadAsExcel = () => {
-    const element = document.getElementById('content-to-download');
-    const workbook = XLSX.utils.book_new();
-    const sheet = XLSX.utils.table_to_sheet(element);
-    XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
-    XLSX.writeFile(workbook, 'data.xlsx');
-  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
