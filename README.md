@@ -1,21 +1,28 @@
-Invoice Manager Frontend
-Overview
+# Invoice Manager Frontend
+
+## Overview
+
 The frontend of the "Invoice Manager" application is built using Next.js, providing a modern and efficient user interface for managing invoices. This application allows users to create, view, update, and delete invoices, and includes features for exporting invoices to PDF and Excel formats.
 
-Technology Stack
-Frontend Framework: Next.js
-Styling: Tailwind CSS
-State Management: Redux Toolkit
-State Persistence: Redux Persist
-PDF Export: Libraries like jsPDF or similar
-Excel Export: Libraries like SheetJS or similar
-Prerequisites
-Node.js
-npm or yarn
-Setup Instructions
-1. Clone the Repository
-bash
-Copy code
+## Technology Stack
+
+- **Frontend Framework:** Next.js
+- **Styling:** Tailwind CSS
+- **State Management:** Redux Toolkit
+- **State Persistence:** Redux Persist
+- **PDF Export:** Libraries like jsPDF or similar
+- **Excel Export:** Libraries like SheetJS or similar
+
+## Prerequisites
+
+- Node.js
+- npm or yarn
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
 git clone <repository_url>
 cd invoice-manager/frontend
 2. Install Dependencies
@@ -54,8 +61,7 @@ Copy code
 ├ ○ /invoice                             142 B          87.5 kB
 ├ ○ /product                             1.35 kB         167 kB
 ├ ○ /signin                              504 B           107 kB
-└ ○ /signup     
-               
+└ ○ /signup                              504 B           107 kB
 Key Features
 Invoice Management
 Create Invoice: Add a new invoice with details such as client information, itemized list of products/services, total amount, and due date.
@@ -105,6 +111,9 @@ Deploy:
 
 Click on "Create Web Service" to start the deployment process.
 Render will automatically build and deploy your application. You can monitor the deployment process and logs through the Render dashboard.
+
+Conclusion
+This README provides the necessary information to set up and run the frontend for the "Invoice Manager" application. The frontend is designed to be user-friendly, responsive, and easily customizable. If you encounter any issues or have any questions, please refer to the documentation or open an issue in the repository.an monitor the deployment process and logs through the Render dashboard.
 
 Conclusion
 This README provides the necessary information to set up and run the frontend for the "Invoice Manager" application. The frontend is designed to be user-friendly, responsive, and easily customizable. If you encounter any issues or have any questions, please refer to the documentation or open an issue in the repository.
