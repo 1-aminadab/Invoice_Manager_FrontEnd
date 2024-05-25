@@ -25,6 +25,7 @@ interface Discount {
 }
 
 interface Product {
+  product_id: number,product_id
   product_name: string;
   description: string;
   price: number;
