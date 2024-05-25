@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Card,
@@ -10,29 +10,46 @@ import {
 import { Label } from "@/app/components/ui/label";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
-import {
-  Select,
-  SelectGroup,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
-import { SelectContent, SelectItem } from "@radix-ui/react-select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/app/components/ui/select";  // Updated import
 
-interface DiscountFormProps {
-  refresh: () => void;
+interface Discount {
+  discount_id?: number;
+  discount_type: string;
+  discount_value: number;
 }
 
-const DiscountForm: React.FC<DiscountFormProps> = ({ refresh }) => {
-  const [discount_name, setDiscountName] = useState<string>("");
+const DiscountForm: React.FC = () => {
   const [discount_type, setDiscountType] = useState<string>("");
   const [discount_value, setDiscountValue] = useState<number>(0);
+  const [discounts, setDiscounts] = useState<Discount[]>([]);
+  const [message, setMessage] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      try {
+        const response = await axios.get<Discount[]>("/api/discounts");
+        setDiscounts(response.data);
+      } catch (error) {
+        setError("Failed to fetch discounts.");
+      }
+    };
+    fetchDiscounts();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newDiscount = { discount_name, discount_type, discount_value };
-    await axios.post("/api/discounts", newDiscount);
-    refresh(); // Refresh the list of discounts
-    // Optionally reset form fields
+    const newDiscount = { discount_type, discount_value };
+    try {
+      const response = await axios.post("http://localhost:5000/discounts", newDiscount);
+      setDiscounts([...discounts, response.data]);
+      setMessage("Discount added successfully.");
+      setError("");
+    } catch (error) {
+      console.error(error);
+      setError("Failed to add discount.");
+      setMessage("");
+    }
   };
 
   return (
@@ -42,24 +59,14 @@ const DiscountForm: React.FC<DiscountFormProps> = ({ refresh }) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="grid gap-4">
-          <div>
-            <Label htmlFor="discount_name">Discount Name</Label>
-            <Input
-              id="discount_name"
-              value={discount_name}
-              onChange={(e) => setDiscountName(e.target.value)}
-              required
-            />
-          </div>
-          <div>
+          <div className="z-10">
             <Label htmlFor="discount_type">Discount Type</Label>
-            <Select required>
+            <Select onValueChange={(value) => setDiscountType(value)}>
               <SelectTrigger>
-                <SelectValue placeholder="discount">Select Tax</SelectValue>
+                <SelectValue placeholder="Select Discount Type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="sdffd">Select Discount Type</SelectItem>
                   <SelectItem value="Percentage">Percentage</SelectItem>
                   <SelectItem value="Fixed Amount">Fixed Amount</SelectItem>
                 </SelectGroup>
@@ -77,6 +84,8 @@ const DiscountForm: React.FC<DiscountFormProps> = ({ refresh }) => {
             />
           </div>
           <Button type="submit">Add Discount</Button>
+          {message && <p className="text-green-500">{message}</p>}
+          {error && <p className="text-red-500">{error}</p>}
         </form>
       </CardContent>
     </Card>
@@ -84,3 +93,5 @@ const DiscountForm: React.FC<DiscountFormProps> = ({ refresh }) => {
 };
 
 export default DiscountForm;
+
+

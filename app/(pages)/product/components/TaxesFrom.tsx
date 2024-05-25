@@ -1,46 +1,89 @@
-'use client'
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Card, CardHeader, CardContent, CardTitle} from '@/app/components/ui/card';
-import { Label } from '@/app/components/ui/label';
-import { Input } from '@/app/components/ui/input';
-import { Button } from '@/app/components/ui/button';
-interface TaxFormProps {
-    refresh: () => void;
+"use client";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Card, CardHeader, CardContent, CardTitle } from "@/app/components/ui/card";
+import { Label } from "@/app/components/ui/label";
+import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+
+interface Tax {
+  tax_id: number;
+  tax_name: string;
+  tax_rate: number;
 }
 
-const TaxForm: React.FC<TaxFormProps> = ({ refresh }) => {
-    const [tax_name, setTaxName] = useState<string>('');
-    const [tax_rate, setTaxRate] = useState<number>(0);
+const TaxForm: React.FC = () => {
+  const [tax_name, setTaxName] = useState<string>("");
+  const [tax_rate, setTaxRate] = useState<number>(0);
+  const [taxes, setTaxes] = useState<Tax[]>([]);
+  const [message, setMessage] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const newTax = { tax_name, tax_rate };
-        await axios.post('/api/taxes', newTax);
-        refresh(); // Refresh the list of taxes
-        // Optionally reset form fields
+  useEffect(() => {
+    const fetchTaxes = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/taxes");
+        setTaxes(response.data);
+      } catch (error) {
+        setError("Failed to fetch taxes.");
+      }
     };
+    fetchTaxes();
+  }, []);
 
-    return (
-        <Card>
-            <CardHeader className="flex flex-row items-start bg-muted/50">
-                <CardTitle>Add New Tax</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="grid gap-4">
-                    <div>
-                        <Label htmlFor="tax_name">Tax Name</Label>
-                        <Input id="tax_name" value={tax_name} onChange={(e) => setTaxName(e.target.value)} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="tax_rate">Tax Rate (%)</Label>
-                        <Input id="tax_rate" type="number" value={tax_rate} onChange={(e) => setTaxRate(parseFloat(e.target.value))} required />
-                    </div>
-                    <Button type="submit">Add Tax</Button>
-                </form>
-            </CardContent>
-        </Card>
-    );
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const newTax = { tax_name, tax_rate };
+    console.log('====================================');
+    console.log(newTax);
+    console.log('====================================');
+    try {
+      const response = await axios.post("http://localhost:5000/taxes", newTax);
+      //setTaxes([...taxes, response.data]);
+      setMessage("Tax added successfully.");
+      setError("");
+    } catch (error) {
+      setError("Failed to add tax.");
+      console.log('====================================');
+      console.log(error);
+      console.log('====================================');
+      setMessage("");
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-start bg-muted/50">
+        <CardTitle>Add New Tax</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="grid gap-4">
+          <div>
+            <Label htmlFor="tax_name">Tax Name</Label>
+            <Input
+              id="tax_name"
+              value={tax_name}
+              onChange={(e) => setTaxName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="tax_rate">Tax Rate (%)</Label>
+            <Input
+              id="tax_rate"
+              type="number"
+              value={tax_rate}
+              onChange={(e) => setTaxRate(parseFloat(e.target.value))}
+              required
+            />
+          </div>
+          <Button type="submit">Add Tax</Button>
+          {message && <p className="text-green-500">{message}</p>}
+          {error && <p className="text-red-500">{error}</p>}
+        </form>
+      </CardContent>
+    </Card>
+  );
 };
 
 export default TaxForm;

@@ -1,6 +1,6 @@
-'use client'
+"use client";
 import React, { useState, useEffect } from "react";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import {
   Card,
   CardHeader,
@@ -9,15 +9,10 @@ import {
 } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import { Input } from "@/app/components/ui/input";
-import { Select, SelectGroup, SelectItem } from "@/app/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/app/components/ui/select";
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/text-area";
-import {
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from "@radix-ui/react-select";
-// Define interfaces for tax and discount objects
+
 interface Tax {
   tax_id: number;
   tax_name: string;
@@ -25,7 +20,16 @@ interface Tax {
 
 interface Discount {
   discount_id: number;
-  discount_name: string;
+  discount_type: string;
+  discount_value: string;
+}
+
+interface Product {
+  product_name: string;
+  description: string;
+  price: number;
+  tax_id?: number | null;
+  discount_id?: number | null;
 }
 
 const ProductForm: React.FC = () => {
@@ -36,30 +40,50 @@ const ProductForm: React.FC = () => {
   const [discount_id, setDiscountId] = useState<number | null>(null);
   const [taxes, setTaxes] = useState<Tax[]>([]);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [message, setMessage] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    axios
-      .get<Tax[]>("/api/taxes")
-      .then((response: AxiosResponse<Tax[]>) => setTaxes(response.data));
-
-    axios
-      .get<Discount[]>("/api/discounts")
-      .then((response: AxiosResponse<Discount[]>) =>
-        setDiscounts(response.data)
-      );
+    const fetchData = async () => {
+      try {
+        const taxResponse = await axios.get("http://localhost:5000/taxes");
+        const discountResponse = await axios.get("http://localhost:5000/discounts");
+        const productResponse = await axios.get("http://localhost:5000/products");
+        setTaxes(taxResponse.data.data);
+        setDiscounts(discountResponse.data.data);
+        setProducts(productResponse.data);
+      } catch (error) {
+        setError("Failed to fetch data.");
+      }
+    };
+    fetchData();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!product_name || !product_description || unit_price <= 0 || unit_price > 10000) {
+      setError("Please fill in all required fields correctly.");
+      return;
+    }
+
     const newProduct = {
       product_name,
-      product_description,
-      unit_price,
+      description: product_description,
+      price: unit_price,
       tax_id,
       discount_id,
     };
-    await axios.post("/api/products", newProduct);
-    // Optionally refresh product list or reset form
+
+    try {
+      const response = await axios.post("http://localhost:5000/products", newProduct);
+      setProducts([...products, response.data]);
+      setMessage("Product added successfully.");
+      setError("");
+    } catch (error) {
+      setError("Failed to add product.");
+      setMessage("");
+    }
   };
 
   return (
@@ -95,23 +119,20 @@ const ProductForm: React.FC = () => {
               value={unit_price}
               onChange={(e) => setUnitPrice(parseFloat(e.target.value))}
               required
+              min={0.01}
+              max={10000}
             />
           </div>
           <div>
             <Label htmlFor="tax_id">Tax</Label>
-            <Select>
+            <Select onValueChange={(value) => setTaxId(parseInt(value))}>
               <SelectTrigger>
-                <SelectValue placeholder="discount">
-                  Select Tax
-                </SelectValue>
+                <SelectValue placeholder="Select Tax" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {[{tax_id:1, tax_name:"tax"}].map((tax) => (
-                    <SelectItem
-                      key={tax.tax_id}
-                      value={tax.tax_id.toString()}
-                    >
+                  {taxes.map((tax) => (
+                    <SelectItem key={tax.tax_id} value={tax.tax_id.toString()}>
                       {tax.tax_name}
                     </SelectItem>
                   ))}
@@ -121,13 +142,9 @@ const ProductForm: React.FC = () => {
           </div>
           <div>
             <Label htmlFor="discount_id">Discount</Label>
-            <Select
-              
-            >
+            <Select onValueChange={(value) => setDiscountId(parseInt(value))}>
               <SelectTrigger>
-                <SelectValue placeholder="discount">
-                  Select Discount
-                </SelectValue>
+                <SelectValue placeholder="Select Discount" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -136,7 +153,7 @@ const ProductForm: React.FC = () => {
                       key={discount.discount_id}
                       value={discount.discount_id.toString()}
                     >
-                      {discount.discount_name}
+                      {discount.discount_type}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -144,6 +161,8 @@ const ProductForm: React.FC = () => {
             </Select>
           </div>
           <Button type="submit">Add Product</Button>
+          {message && <p className="text-green-500">{message}</p>}
+          {error && <p className="text-red-500">{error}</p>}
         </form>
       </CardContent>
     </Card>

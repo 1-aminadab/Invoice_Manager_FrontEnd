@@ -14,8 +14,8 @@ const HomePage = () => {
             <div className='flex w-[100%] gap-2 p-4 '>
                  <ProductForm />
                  <div className='flex flex-col gap-2'>
-                     <TaxForm refresh={()=>{}}/>
-            <DiscountForm refresh={()=>{}}/>
+                    <TaxForm />
+                    <DiscountForm />
                  </div>
            
             </div>
