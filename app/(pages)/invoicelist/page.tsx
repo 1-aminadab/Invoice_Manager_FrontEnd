@@ -35,7 +35,7 @@ export default function InvoiceComponent() {
       const invoices = await fetchInvoices();
       console.log(invoices);
       
-      setInvoices(invoices.data);
+      // setInvoices(invoices.data);
       setLoading(false);
     }
 

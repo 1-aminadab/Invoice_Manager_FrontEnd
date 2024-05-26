@@ -32,9 +32,9 @@ export default function Dashboard() {
     async function loadProducts() {
       setLoading(true);
       const products = await fetchProducts();
-      console.log(products.data);
+      // console.log(products.data);
       
-      setProducts(products.data);
+      // setProducts(products.data);
       setLoading(false);
     }
 
@@ -48,12 +48,12 @@ export default function Dashboard() {
 
   const handleUpdateProduct = async (id: number, updatedProduct: Partial<Product>) => {
     const newProduct = await updateProduct(id, updatedProduct);
-    setProducts(products.map((product) => (product.id === id ? newProduct : product)));
+    setProducts(products.map((product) => (product.product_id === id ? newProduct : product)));
   };
 
   const handleDeleteProduct = async (id: number) => {
     await deleteProduct(id);
-    setProducts(products.filter((product) => product.id !== id));
+    setProducts(products.filter((product) => product.product_id !== id));
   };
 
   if (loading) {

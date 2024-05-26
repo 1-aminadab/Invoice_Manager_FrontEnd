@@ -8,15 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./components/ui/card"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu"
+
 
 import { Progress } from "./components/ui/progress"
 
@@ -30,7 +22,6 @@ import {
 import FromTo from "./(pages)/home/from-to"
 
 
-import { useState } from "react"
 import { jsPDF } from 'jspdf';
 import PaymentForm from "./(pages)/product/components/PaymentFrom"
 import InvoiceForm from "./(pages)/product/components/InvoiceItems"
@@ -38,22 +29,22 @@ import CustomList from "./components/templates/List"
 import Sidebar from "./components/templates/Sidebar"
 import Navbar from "./components/templates/Navbar"
 import InvoiceSheet from "./components/templates/InvoiceSheet"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "./lib/store"
 
 export default function HomeMain() {
   const generatePdf = () => {
     const doc = new jsPDF();
-    const content:any = document.getElementById('content-to-convert')?.innerHTML;
-     // Replace with your content selector
+    const content: any = document.getElementById('content-to-convert')?.innerHTML;
+    // Replace with your content selector
     doc.text(content, 10, 10);
     doc.save('my-component.pdf');
   };
- 
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <Sidebar/>
+      <Sidebar />
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-       <Navbar/>
+        <Navbar />
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
           <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
@@ -110,25 +101,25 @@ export default function HomeMain() {
                   <TabsTrigger className="data-[state=active]:bg-white" value="summery">Summery</TabsTrigger>
 
                 </TabsList>
-                
+
               </div>
               <TabsContent value="from">
                 <FromTo />
               </TabsContent>
               <TabsContent value="payment">
-                <PaymentForm/>
+                <PaymentForm />
               </TabsContent>
               <TabsContent value="line">
-                <InvoiceForm/>
+                <InvoiceForm />
               </TabsContent>
               <TabsContent value="detail">
-               <CustomList/>
+                <CustomList />
               </TabsContent>
             </Tabs>
           </div>
           <div>
-          <button onClick={generatePdf}>Download PDF</button>
-            <InvoiceSheet/>
+            <button onClick={generatePdf}>Download PDF</button>
+            <InvoiceSheet />
           </div>
         </main>
       </div>

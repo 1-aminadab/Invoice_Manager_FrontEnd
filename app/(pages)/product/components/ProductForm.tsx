@@ -12,26 +12,7 @@ import { Input } from "@/app/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/app/components/ui/select";
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/text-area";
-
-interface Tax {
-  tax_id: number;
-  tax_name: string;
-}
-
-interface Discount {
-  discount_id: number;
-  discount_type: string;
-  discount_value: string;
-}
-
-interface Product {
-  product_id: number,product_id
-  product_name: string;
-  description: string;
-  price: number;
-  tax_id?: number | null;
-  discount_id?: number | null;
-}
+import { Discount, Product, Tax } from "@/app/types/type";
 
 const ProductForm: React.FC = () => {
   const [product_name, setProductName] = useState<string>("");
@@ -51,9 +32,9 @@ const ProductForm: React.FC = () => {
         const taxResponse = await axios.get("http://localhost:5000/taxes");
         const discountResponse = await axios.get("http://localhost:5000/discounts");
         const productResponse = await axios.get("http://localhost:5000/products");
-        setTaxes(taxResponse.data.data);
-        setDiscounts(discountResponse.data.data);
-        setProducts(productResponse.data);
+        setTaxes(taxResponse.data?.data ?? []);
+        setDiscounts(discountResponse.data?.data ?? []);
+        setProducts(productResponse.data ?? []);
       } catch (error) {
         setError("Failed to fetch data.");
       }
@@ -133,7 +114,7 @@ const ProductForm: React.FC = () => {
               <SelectContent>
                 <SelectGroup>
                   {taxes.map((tax) => (
-                    <SelectItem key={tax.tax_id} value={tax.tax_id.toString()}>
+                    <SelectItem key={tax.tax_id} value={tax.tax_id?.toString() ?? ""}>
                       {tax.tax_name}
                     </SelectItem>
                   ))}
@@ -152,7 +133,7 @@ const ProductForm: React.FC = () => {
                   {discounts.map((discount) => (
                     <SelectItem
                       key={discount.discount_id}
-                      value={discount.discount_id.toString()}
+                      value={discount.discount_id?.toString() ?? ""}
                     >
                       {discount.discount_type}
                     </SelectItem>

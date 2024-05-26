@@ -23,6 +23,9 @@ import { Pagination, PaginationContent, PaginationItem } from '../ui/pagination'
 
 import { useReactToPrint } from 'react-to-print';
 import * as XLSX from 'xlsx';
+import { useSelector } from 'react-redux'
+import { RootState } from '@/app/lib/store'
+import { getProduct, invoiceCalculator } from '@/app/lib/calculator/invoice'
 
 interface PrintableProps {
     content: React.ReactElement;
@@ -43,6 +46,15 @@ interface PrintableProps {
     ]
   };
 function InvoiceSheet() {
+  const {newPayment, newInvoiceItems,invoiceCustomer} = useSelector((store:RootState)=>store.invoice)
+  const {user} = useSelector((store:RootState)=>store.user)
+  const productIds = newInvoiceItems.map((item)=>{
+    return {
+      id:item.product_id,
+      quantity: item.quantity
+    }
+  })
+  const priceSummery = invoiceCalculator(productIds)
     // handle pdf downlaod 
     const componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
@@ -76,7 +88,10 @@ function InvoiceSheet() {
     link.click();
   };
   
-
+  function formatDate(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+  }
 
   return (
     <Card
@@ -86,7 +101,7 @@ function InvoiceSheet() {
     <CardHeader className="flex flex-row items-start bg-muted/50">
       <div className="grid gap-0.5" >
         <CardTitle className="group flex items-center gap-2 text-lg">
-          Order Oe31b70H
+          Invoice Sheet
           <Button
             size="icon"
             variant="outline"
@@ -96,7 +111,7 @@ function InvoiceSheet() {
             <span className="sr-only">Copy Order ID</span>
           </Button>
         </CardTitle>
-        <CardDescription>Date: November 23, 2023</CardDescription>
+        <CardDescription>Date: {formatDate(new Date())}</CardDescription>
       </div>
       <div className="ml-auto flex items-center gap-1">
         <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -123,54 +138,55 @@ function InvoiceSheet() {
       <div className="grid gap-3"  id="content-to-download">
         <div className="font-semibold">Invoice Details</div>
         <ul className="grid gap-3">
-          <li className="flex items-center justify-between">
+          {
+            newInvoiceItems.map((item, index)=>{
+              return (
+                 <li key={index} className="flex items-center justify-between">
             <span className="text-muted-foreground">
-              Game 1 x <span>2</span>
+              {getProduct(item.product_id)?.product_name}
             </span>
-            <span>250.00 birr</span>
+            <span>{item.quantity} items</span>
+            <span>{item.total_price} birr</span>
           </li>
-          <li className="flex items-center justify-between">
-            <span className="text-muted-foreground">
-              Game 2 x <span>1</span>
-            </span>
-            <span>490000.00 birr</span>
-          </li>
+              )
+            })
+          }
+         
+         
         </ul>
         <Separator className="my-2" />
         <ul className="grid gap-3">
           <li className="flex items-center justify-between">
             <span className="text-muted-foreground">Subtotal</span>
-            <span>299.00 birr</span>
+            <span>{priceSummery.subTotal} birr</span>
           </li>
-          <li className="flex items-center justify-between">
-            <span className="text-muted-foreground">Delivery</span>
-            <span>5.00 birr</span>
-          </li>
+          
           <li className="flex items-center justify-between">
             <span className="text-muted-foreground">Tax</span>
-            <span>25.00 birr</span>
+            <span>{priceSummery.taxAmount} birr</span>
           </li>
           <li className="flex items-center justify-between font-semibold">
             <span className="text-muted-foreground">Total</span>
-            <span>329.00 birr</span>
+            <span>{priceSummery.totalAmount}birr</span>
           </li>
         </ul>
       </div>
       <Separator className="my-4" />
       <div className="grid grid-cols-2 gap-4">
         <div className="grid gap-3">
-          <div className="font-semibold">Develiver Information</div>
+          <div className="font-semibold">owner information</div>
           <address className="grid gap-0.5 not-italic text-muted-foreground">
-            <span>Wesen Michael</span>
-            <span>1234 </span>
-            <span>sole, CA 12345</span>
+            <span>{user?.first_name} {user?.last_name}</span>
+            <span>{user?.phoneNumber}</span>
+            <span>{user?.city}</span>
+            <span>{user?.address}</span>
           </address>
         </div>
         <div className="grid auto-rows-max gap-3">
           <div className="font-semibold">Billing Information</div>
-          <div className="text-muted-foreground">
+          {/* <div className="text-muted-foreground">
             Same as delivery address
-          </div>
+          </div> */}
         </div>
       </div>
       <Separator className="my-4" />
@@ -179,18 +195,23 @@ function InvoiceSheet() {
         <dl className="grid gap-3">
           <div className="flex items-center justify-between">
             <dt className="text-muted-foreground">Customer</dt>
-            <dd>Liam Johnson</dd>
+            <dd>{invoiceCustomer?.first_name} {invoiceCustomer?.last_name}</dd>
           </div>
           <div className="flex items-center justify-between">
             <dt className="text-muted-foreground">Email</dt>
             <dd>
-              <a href="mailto:">liam@acme.com</a>
+              <a href="mailto:">{invoiceCustomer?.email}</a>
+            </dd>
+          </div>
+          <div>
+            <dd>
+              <a href="tel:">{invoiceCustomer?.address}</a>
             </dd>
           </div>
           <div className="flex items-center justify-between">
             <dt className="text-muted-foreground">Phone</dt>
             <dd>
-              <a href="tel:">+251 234 567 890</a>
+              <a href="tel:">{invoiceCustomer?.phoneNumber}</a>
             </dd>
           </div>
         </dl>
@@ -202,33 +223,19 @@ function InvoiceSheet() {
           <div className="flex items-center justify-between">
             <dt className="flex items-center gap-1 text-muted-foreground">
               <CreditCard className="h-4 w-4" />
-             Cbe
+             {newPayment?.payment_method}
             </dt>
-            <dd>**** **** **** 4532</dd>
+            <dd>{newPayment?.payment_amount} birr</dd>
+            <dd>{newPayment?.payment_status}</dd>
           </div>
         </dl>
       </div>
     </CardContent>
     <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
       <div className="text-xs text-muted-foreground">
-        Updated <time dateTime="2023-11-23">November 23, 2023</time>
+        Updated <time dateTime="2023-11-23">November 23, {new Date().getFullYear()}</time>
       </div>
-      <Pagination className="ml-auto mr-0 w-auto">
-        <PaginationContent>
-          <PaginationItem>
-            <Button size="icon" variant="outline" className="h-6 w-6">
-              <ChevronLeft className="h-3.5 w-3.5" />
-              <span className="sr-only">Previous Order</span>
-            </Button>
-          </PaginationItem>
-          <PaginationItem>
-            <Button size="icon" variant="outline" className="h-6 w-6">
-              <ChevronRight className="h-3.5 w-3.5" />
-              <span className="sr-only">Next Order</span>
-            </Button>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      
     </CardFooter>
   </Card>
   )
