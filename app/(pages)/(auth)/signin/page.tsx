@@ -7,6 +7,10 @@ import { useRouter } from "next/navigation";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { useDispatch } from "react-redux";
+import { setLogin } from "@/app/lib/features/userSlice";
+import { User } from "@/app/types/type";
+import { getCookie, setCookie } from 'cookies-next'
 
 interface SigninFormState {
   email: string;
@@ -31,7 +35,7 @@ export default function SigninForm() {
   });
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState<boolean>(false);
-
+  const dispatch = useDispatch()
   useEffect(() => {
     // Preloading can trigger this effect to use router right after loading
     router.prefetch('/home');
@@ -62,15 +66,16 @@ export default function SigninForm() {
         },
       });
       if (response.status === 200) {
-        const data = response.data;
-        // Store tokens and user data
-        localStorage.setItem('tokens', JSON.stringify(data.tokens));
-        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        const data: { access_token: string; refresh_token: string; user: User } = response.data.data;
+        setCookie('access_token',data.access_token)
+        setCookie('refresh_token',data.refresh_token)
+        dispatch(setLogin({access_token:data.access_token, refresh_token:data.refresh_token,  user: data.user }));
         router.push('/');
       } else {
         setErrors({ form: response.data.error });
       }
-    } catch (error:any) {
+    } catch (error: any) {
       setErrors({ form: error.response.data.error });
       console.log('====================================');
       console.log(error.response);

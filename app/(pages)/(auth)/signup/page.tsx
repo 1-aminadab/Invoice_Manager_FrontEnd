@@ -10,6 +10,10 @@ import Image from "next/image";
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from 'next/navigation';
 import axios from "axios";
+import { setLogin } from "@/app/lib/features/userSlice";
+import { useDispatch } from "react-redux";
+import { User } from "@/app/types/type";
+import { setCookie } from "cookies-next";
 
 interface SignupFormState {
   first_name: string;
@@ -34,6 +38,7 @@ const LoadingSpinner = () => (
 
 export default function SignupForm() {
   const router = useRouter();
+  const dispatch = useDispatch()
   const [formState, setFormState] = useState<SignupFormState>({
     first_name: '',
     last_name: '',
@@ -87,8 +92,10 @@ export default function SignupForm() {
           const data = response.data;
       if (response.status === 200 || response.status === 201) {
         // Store tokens and user data
-        localStorage.setItem('tokens', JSON.stringify(data.tokens));
-        localStorage.setItem('user', JSON.stringify(data.user));
+        const data: { access_token: string; refresh_token: string; user: User } = response.data.data;
+        setCookie('access_token',data.access_token)
+        setCookie('refresh_token',data.refresh_token)
+        dispatch(setLogin({access_token:data.access_token, refresh_token:data.refresh_token,  user: data.user }));
         router.push('/');
       } else {
         setErrors({ form: data.message });

@@ -1,12 +1,14 @@
+
 import { User } from "@/app/types/type";
 import { createSlice } from "@reduxjs/toolkit";
 
 interface UserState {
-    user: User | null; // User type (replace with your user data structure)
+    user: User | null; 
     customers:User[],
     selected_customer:User | null;
     access_token:string | null,
     refresh_token:string | null,
+    isLoggedIn:boolean
   }
   
   // Define the User interface (replace with your actual user data structure)
@@ -17,7 +19,8 @@ interface UserState {
     customers: [],
     selected_customer:null,
     access_token: null,
-    refresh_token:null
+    refresh_token:null,
+    isLoggedIn:false
   };
   
   // Define user slice actions with typed payloads
@@ -39,8 +42,17 @@ interface UserState {
       },
       setCurrentCusomer(state, action: {payload:User | null}) {
         state.selected_customer = action.payload
+      },
+      setLogin(state, action: {payload:{access_token:string,refresh_token:string, user:User}}) {
+        state.user = action.payload.user
+
+        state.isLoggedIn = true
+      },
+      setLogout(state){
+      return initialState
+
       }
     },
   });
-  export const { setUser, setCustomers, setAccessToken, setRefreshToken } = userSlice.actions;
+  export const { setUser, setCustomers, setAccessToken, setRefreshToken, setLogin,setLogout } = userSlice.actions;
   

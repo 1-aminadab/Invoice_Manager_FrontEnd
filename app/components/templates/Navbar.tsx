@@ -8,10 +8,23 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import Image from 'next/image'
+import { setCookie } from 'cookies-next'
+import { useDispatch } from 'react-redux'
+import { setLogin, setLogout } from '@/app/lib/features/userSlice'
+import { useRouter } from 'next/navigation';
 
 
 
 function Navbar() {
+  const dispatch = useDispatch()
+  const router = useRouter()
+  const loggingOut = async()=>{
+    setCookie('access_token',undefined)
+    setCookie('refresh_token',undefined)
+    dispatch(setLogout())
+    router.push('/signin');
+
+  }
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
     <Sheet>
@@ -124,7 +137,7 @@ function Navbar() {
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
+        <DropdownMenuItem onClick={loggingOut}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   </header>
