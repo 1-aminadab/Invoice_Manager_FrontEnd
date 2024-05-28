@@ -5,25 +5,27 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/app/components/ui/ca
 import { Label } from "@/app/components/ui/label";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
-
-interface Tax {
-  tax_id: number;
-  tax_name: string;
-  tax_rate: number;
-}
+import { getTaxesAPI } from "@/app/apis";
+import { Tax } from "@/app/types/type";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/lib/store";
 
 const TaxForm: React.FC = () => {
+  const {user} = useSelector((store:RootState)=>store.user)
   const [tax_name, setTaxName] = useState<string>("");
   const [tax_rate, setTaxRate] = useState<number>(0);
   const [taxes, setTaxes] = useState<Tax[]>([]);
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
-
+ 
   useEffect(() => {
     const fetchTaxes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/taxes");
+        const response = await getTaxesAPI()
         setTaxes(response.data);
+        console.log('====================================');
+        console.log(response.data);
+        console.log('====================================');
       } catch (error) {
         setError("Failed to fetch taxes.");
       }
@@ -33,10 +35,11 @@ const TaxForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newTax = { tax_name, tax_rate };
     console.log('====================================');
-    console.log(newTax);
+    console.log(user);
     console.log('====================================');
+    const newTax = { tax_name, tax_rate,tax_added_by:user?.user_id };
+
     try {
       const response = await axios.post("http://localhost:5000/taxes", newTax);
       //setTaxes([...taxes, response.data]);

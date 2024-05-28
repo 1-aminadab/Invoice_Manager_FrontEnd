@@ -25,14 +25,19 @@ import FromTo from "./(pages)/home/from-to"
 import { jsPDF } from 'jspdf';
 import PaymentForm from "./(pages)/product/components/PaymentFrom"
 import InvoiceForm from "./(pages)/product/components/InvoiceItems"
-import CustomList from "./components/templates/List"
+import CustomList from "./components/templates/invoiceList"
 import Sidebar from "./components/templates/Sidebar"
 import Navbar from "./components/templates/Navbar"
 import InvoiceSheet from "./components/templates/InvoiceSheet"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "./lib/store"
+import { changeCurrentScreen } from "./lib/features/InvoiceSlice"
+import TaxCard from "./components/cards/taxCard"
+import ProductCard from "./components/cards/productCard"
+import InvoiceCard from "./components/cards/invoiceCard"
 
 export default function HomeMain() {
+  const { currentScreen } = useSelector((store: RootState) => store.invoice)
   const generatePdf = () => {
     const doc = new jsPDF();
     const content: any = document.getElementById('content-to-convert')?.innerHTML;
@@ -40,6 +45,7 @@ export default function HomeMain() {
     doc.text(content, 10, 10);
     doc.save('my-component.pdf');
   };
+  const dispatch = useDispatch()
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <Sidebar />
@@ -59,7 +65,7 @@ export default function HomeMain() {
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  <Button>Create New Invoice</Button>
+                  <Button onClick={() => dispatch(changeCurrentScreen(currentScreen === "list" ? "add" : "list"))}>{currentScreen === "list" ? "Create New Invoice" : "Show Invoice List"} </Button>
                 </CardFooter>
               </Card>
               <Card x-chunk="dashboard-05-chunk-1">
@@ -91,36 +97,42 @@ export default function HomeMain() {
                 </CardFooter>
               </Card>
             </div>
-            <Tabs defaultValue="week">
-              <div className="flex items-center">
-                <TabsList>
-                  <TabsTrigger className="data-[state=active]:bg-white" value="from">From/To</TabsTrigger>
-                  <TabsTrigger className="data-[state=active]:bg-white" value="detail">Invoice Detail</TabsTrigger>
-                  <TabsTrigger className="data-[state=active]:bg-white" value="line">Line Item</TabsTrigger>
-                  <TabsTrigger className="data-[state=active]:bg-white" value="payment">Payment Info</TabsTrigger>
-                  <TabsTrigger className="data-[state=active]:bg-white" value="summery">Summery</TabsTrigger>
+            {
+              currentScreen === "list" && <CustomList />
+            }
+            {
+              currentScreen === "add" &&
 
-                </TabsList>
+              <Tabs defaultValue="from">
+                <div className="flex items-center">
+                  <TabsList>
+                    <TabsTrigger className="data-[state=active]:bg-white" value="from">From/To</TabsTrigger>
+                    <TabsTrigger className="data-[state=active]:bg-white" value="detail">Invoice Detail</TabsTrigger>
+                    <TabsTrigger className="data-[state=active]:bg-white" value="line">Line Item</TabsTrigger>
+                    <TabsTrigger className="data-[state=active]:bg-white" value="payment">Payment Info</TabsTrigger>
+                    <TabsTrigger className="data-[state=active]:bg-white" value="summery">Summery</TabsTrigger>
 
-              </div>
-              <TabsContent value="from">
-                <FromTo />
-              </TabsContent>
-              <TabsContent value="payment">
-                <PaymentForm />
-              </TabsContent>
-              <TabsContent value="line">
-                <InvoiceForm />
-              </TabsContent>
-              <TabsContent value="detail">
-                <CustomList />
-              </TabsContent>
-            </Tabs>
+                  </TabsList>
+
+                </div>
+                <TabsContent value="from">
+                  <FromTo />
+                </TabsContent>
+                <TabsContent value="payment">
+                  <PaymentForm />
+                </TabsContent>
+                <TabsContent value="line">
+                  <InvoiceForm />
+                </TabsContent>
+                <TabsContent value="detail">
+                  <CustomList />
+                </TabsContent>
+              </Tabs>
+            }
           </div>
-          <div>
-            <button onClick={generatePdf}>Download PDF</button>
-            <InvoiceSheet />
-          </div>
+          
+          {currentScreen === "add"?  <div> <InvoiceSheet /> </div> : <InvoiceCard/>}
+
         </main>
       </div>
     </div>

@@ -40,12 +40,13 @@ export interface Invoice {
     invoice_number: string;
     from_customer_id: number;
     to_customer_id: number;
-    date_issued: Date;
-    due_date: Date;
+    date_issued?: Date | string | undefined;
+    due_date?: Date | string | undefined;
     status: string;
     total_amount: number;
     tax_amount: number;
     subtotal: number; 
+
   }
   
 export interface InvoiceItem {

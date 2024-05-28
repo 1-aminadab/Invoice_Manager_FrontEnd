@@ -48,6 +48,9 @@ interface PrintableProps {
 function InvoiceSheet() {
   const {newPayment, newInvoiceItems,invoiceCustomer} = useSelector((store:RootState)=>store.invoice)
   const {user} = useSelector((store:RootState)=>store.user)
+  console.log('====================================');
+  console.log("the user", user);
+  console.log('====================================');
   const productIds = newInvoiceItems.map((item)=>{
     return {
       id:item.product_id,
@@ -172,22 +175,32 @@ function InvoiceSheet() {
         </ul>
       </div>
       <Separator className="my-4" />
-      <div className="grid grid-cols-2 gap-4">
-        <div className="grid gap-3">
-          <div className="font-semibold">owner information</div>
-          <address className="grid gap-0.5 not-italic text-muted-foreground">
-            <span>{user?.first_name} {user?.last_name}</span>
-            <span>{user?.phoneNumber}</span>
-            <span>{user?.city}</span>
-            <span>{user?.address}</span>
-          </address>
-        </div>
-        <div className="grid auto-rows-max gap-3">
-          <div className="font-semibold">Billing Information</div>
-          {/* <div className="text-muted-foreground">
-            Same as delivery address
-          </div> */}
-        </div>
+      <div className="grid gap-3">
+        <div className="font-semibold">Owner Information</div>
+        <dl className="grid gap-3">
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground">Customer</dt>
+            <dd>{user?.first_name} {user?.last_name}</dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground">Email</dt>
+            <dd>
+              <a href="mailto:">{user?.email}</a>
+            </dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground">Address</dt>
+            <dd>
+              <a href="tel:">{user?.address}</a>
+            </dd>
+          </div>
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground">Phone</dt>
+            <dd>
+              <a href="tel:">{user?.phoneNumber}</a>
+            </dd>
+          </div>
+        </dl>
       </div>
       <Separator className="my-4" />
       <div className="grid gap-3">
@@ -203,9 +216,10 @@ function InvoiceSheet() {
               <a href="mailto:">{invoiceCustomer?.email}</a>
             </dd>
           </div>
-          <div>
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground">Address</dt>
             <dd>
-              <a href="tel:">{invoiceCustomer?.address}</a>
+              <a href="tel:">{invoiceCustomer?.phoneNumber}</a>
             </dd>
           </div>
           <div className="flex items-center justify-between">

@@ -265,16 +265,14 @@ export default function SignupForm() {
           </CardContent>
         </Card>
       </div>
-      <div className="hidden bg-muted lg:block">
-        {image && (
-          <Image
-            src={URL.createObjectURL(image)}
-            alt="Image"
-            width="1920"
-            height="1080"
-            className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-          />
-        )}
+      <div className="hidden bg-muted lg:block border shadow-md">
+        <Image
+          src="/lepton-logo-full.png"
+          alt="Image"
+          width="900"
+          height="900"
+          className="object-cover dark:brightness-[0.2] dark:grayscale filter grayscale"
+        />
       </div>
     </div>
   );

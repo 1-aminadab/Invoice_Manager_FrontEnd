@@ -1,15 +1,8 @@
 // productSlice.ts
+import { Product } from '@/app/types/type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Product {
-  product_id?: number;
-  product_added_by: number;
-  product_name: string;
-  description?: string;
-  price: number;
-  tax_id?: number;
-  discount_id?: number;
-}
+
 
 interface ProductState {
   products: Product[];

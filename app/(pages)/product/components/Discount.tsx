@@ -11,6 +11,9 @@ import { Label } from "@/app/components/ui/label";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/app/components/ui/select";  // Updated import
+import { getDiscountsAPI } from "@/app/apis";
+import { RootState } from "@/app/lib/store";
+import { useSelector } from "react-redux";
 
 interface Discount {
   discount_id?: number;
@@ -19,6 +22,7 @@ interface Discount {
 }
 
 const DiscountForm: React.FC = () => {
+  const {user} = useSelector((store:RootState)=>store.user)
   const [discount_type, setDiscountType] = useState<string>("");
   const [discount_value, setDiscountValue] = useState<number>(0);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
@@ -28,9 +32,15 @@ const DiscountForm: React.FC = () => {
   useEffect(() => {
     const fetchDiscounts = async () => {
       try {
-        const response = await axios.get<Discount[]>("/api/discounts");
+        const response = await getDiscountsAPI()
         setDiscounts(response.data);
+        console.log('====================================');
+        console.log(response.data);
+        console.log('====================================');
       } catch (error) {
+        console.log('====================================');
+        console.log(error);
+        console.log('====================================');
         setError("Failed to fetch discounts.");
       }
     };
@@ -39,7 +49,7 @@ const DiscountForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newDiscount = { discount_type, discount_value };
+    const newDiscount = { discount_type, discount_value, discount_added_by:user?.user_id };
     try {
       const response = await axios.post("http://localhost:5000/discounts", newDiscount);
       setDiscounts([...discounts, response.data]);

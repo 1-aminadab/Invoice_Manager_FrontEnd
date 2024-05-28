@@ -16,6 +16,7 @@ interface InvoiceState {
   invoiceCustomer:User | null,
   isLoading: boolean;
   error: string | null;
+  currentScreen:string;
 }
 
 const initialState: InvoiceState = {
@@ -30,6 +31,7 @@ const initialState: InvoiceState = {
   invoiceCustomer:null,
   isLoading: false,
   error: null,
+  currentScreen:"list"
 };
 
 export const invoiceSlice = createSlice({
@@ -124,6 +126,9 @@ export const invoiceSlice = createSlice({
     addNewCustomer(state, action: PayloadAction<User>) {
         state.invoiceCustomer = action.payload
     },
+    changeCurrentScreen(state, action: PayloadAction<string>){
+      state.currentScreen = action.payload
+    }
   },
 });
 
@@ -151,6 +156,7 @@ export const {
  addNewInvoiceItems,
  addNewPayment,
  addNewCustomer,
+ changeCurrentScreen
 } = invoiceSlice.actions;
 
 export default invoiceSlice.reducer;

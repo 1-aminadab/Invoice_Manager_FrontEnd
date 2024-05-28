@@ -13,6 +13,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectI
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/text-area";
 import { Discount, Product, Tax } from "@/app/types/type";
+import { getDiscountsAPI, getProductsAPI, getTaxesAPI } from "@/app/apis";
 
 const ProductForm: React.FC = () => {
   const [product_name, setProductName] = useState<string>("");
@@ -29,9 +30,10 @@ const ProductForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const taxResponse = await axios.get("http://localhost:5000/taxes");
-        const discountResponse = await axios.get("http://localhost:5000/discounts");
-        const productResponse = await axios.get("http://localhost:5000/products");
+        const taxResponse = await getTaxesAPI()
+        const discountResponse = await getDiscountsAPI()
+        const productResponse = await getProductsAPI()
+        
         setTaxes(taxResponse.data?.data ?? []);
         setDiscounts(discountResponse.data?.data ?? []);
         setProducts(productResponse.data ?? []);

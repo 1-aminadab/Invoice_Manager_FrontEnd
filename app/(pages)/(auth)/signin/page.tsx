@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "@/app/lib/features/userSlice";
 import { User } from "@/app/types/type";
 import { getCookie, setCookie } from 'cookies-next'
-
+import Logo from ''
 interface SigninFormState {
   email: string;
   password: string;
@@ -48,7 +48,6 @@ export default function SigninForm() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormState(prevState => ({ ...prevState, [id]: value }));
@@ -146,13 +145,13 @@ export default function SigninForm() {
           </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block ">
+      <div className="hidden bg-muted lg:block border shadow-md">
         <Image
-          src="/placeholder.svg"
+          src="/lepton-logo-full.png"
           alt="Image"
-          width="1920"
-          height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          width="900"
+          height="900"
+          className="object-cover dark:brightness-[0.2] dark:grayscale filter grayscale"
         />
       </div>
     </div>
