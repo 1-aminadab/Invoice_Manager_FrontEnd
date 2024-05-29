@@ -6,12 +6,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProductState {
   products: Product[];
+  selectedProduct:Product | null;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: ProductState = {
   products: [],
+  selectedProduct:null,
   isLoading: false,
   error: null,
 };
@@ -23,6 +25,9 @@ export const productSlice = createSlice({
     fetchProductsStart(state) {
       state.isLoading = true;
       state.error = null;
+    },
+    setSelectedProduct(state, action:PayloadAction<Product>){
+      state.selectedProduct = action.payload
     },
     fetchProductsSuccess(state, action: PayloadAction<Product[]>) {
       state.isLoading = false;
@@ -54,6 +59,7 @@ export const {
   addProduct,
   updateProduct,
   deleteProduct,
+  setSelectedProduct
 } = productSlice.actions;
 
 export default productSlice.reducer;

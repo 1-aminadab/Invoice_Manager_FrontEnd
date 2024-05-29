@@ -12,6 +12,7 @@ import { setLogin } from "@/app/lib/features/userSlice";
 import { User } from "@/app/types/type";
 import { getCookie, setCookie } from 'cookies-next'
 import Logo from ''
+import { loginAPI } from "@/app/apis";
 interface SigninFormState {
   email: string;
   password: string;
@@ -59,11 +60,7 @@ export default function SigninForm() {
     if (!validateInputs()) return;
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/auth/local/signin', formState, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await loginAPI(formState)
       if (response.status === 200) {
         
         const data: { access_token: string; refresh_token: string; user: User } = response.data.data;

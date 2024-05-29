@@ -14,6 +14,7 @@ import { setLogin } from "@/app/lib/features/userSlice";
 import { useDispatch } from "react-redux";
 import { User } from "@/app/types/type";
 import { setCookie } from "cookies-next";
+import { registerAPI } from "@/app/apis";
 
 interface SignupFormState {
   first_name: string;
@@ -87,7 +88,7 @@ export default function SignupForm() {
       console.log('====================================');
       console.log("we are starting");
       console.log('====================================');
-      await axios.post('http://localhost:5000/auth/local/signup', formState)
+      await registerAPI(formState)
       .then((response) => {
           const data = response.data;
       if (response.status === 200 || response.status === 201) {

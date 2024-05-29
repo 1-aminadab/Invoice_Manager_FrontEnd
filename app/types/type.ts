@@ -13,7 +13,7 @@ export interface User {
   
 export interface Product {
     product_id?: number;
-    product_added_by: number;
+    product_added_by?: number;
     product_name: string;
     description?: string;
     price: number;

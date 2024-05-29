@@ -11,7 +11,7 @@ import { Label } from "@/app/components/ui/label";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/app/components/ui/select";  // Updated import
-import { getDiscountsAPI } from "@/app/apis";
+import { createDiscountAPI, getDiscountsAPI } from "@/app/apis";
 import { RootState } from "@/app/lib/store";
 import { useSelector } from "react-redux";
 
@@ -51,7 +51,10 @@ const DiscountForm: React.FC = () => {
     e.preventDefault();
     const newDiscount = { discount_type, discount_value, discount_added_by:user?.user_id };
     try {
-      const response = await axios.post("http://localhost:5000/discounts", newDiscount);
+      const response = await createDiscountAPI(newDiscount)
+      console.log('====================================');
+      console.log(response.data);
+      console.log('====================================');
       setDiscounts([...discounts, response.data]);
       setMessage("Discount added successfully.");
       setError("");

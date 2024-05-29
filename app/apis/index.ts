@@ -1,12 +1,13 @@
 import axios from "axios";
+import { Discount, Product } from "../types/type";
 
-axios.defaults.baseURL ='http://localhost:5000' 
-
-export const loginAPI = async (credentials: { username: string; password: string }) => 
-    await axios.post('/local/signin', credentials);
+//axios.defaults.baseURL ='https://api-invoicemanager.onrender.com'
+axios.defaults.baseURL ='http://localhost:5000'
+export const loginAPI = async (credentials: { email: string; password: string }) => 
+    await axios.post('auth/local/signin', credentials);
   
-  export const registerAPI = async (data: { username: string; password: string; email: string }) => 
-    await axios.post('/auth/register', data);
+  export const registerAPI = async (data: Object) => 
+    await axios.post('/auth/local/signup', data);
   
   export const logoutAPI = async () => 
     await axios.post('/auth/logout');
@@ -38,16 +39,16 @@ export const loginAPI = async (credentials: { username: string; password: string
     await axios.get('/discounts');
   
   export const getDiscountAPI = async (id: number) => 
-    await axios.get(`/discount/${id}`);
+    await axios.get(`/discounts/${id}`);
   
-  export const createDiscountAPI = async (data: { name: string; type: string; value: number }) => 
-    await axios.post('/discount', data);
+  export const createDiscountAPI = async (data: Object) => 
+    await axios.post('/discounts', data);
   
-  export const updateDiscountAPI = async (id: number, data: { name?: string; type?: string; value?: number }) => 
-    await axios.put(`/discount/${id}`, data);
+  export const updateDiscountAPI = async (id: number, data:Discount) => 
+    await axios.patch(`/discounts/${id}`, data);
   
   export const deleteDiscountAPI = async (id: number) => 
-    await axios.delete(`/discount/${id}`);
+    await axios.delete(`/discounts/${id}`);
 
   // Product
   export const getProductsAPI = async () => 
@@ -56,8 +57,8 @@ export const loginAPI = async (credentials: { username: string; password: string
   export const getProductAPI = async (id: number) => 
     await axios.get(`/product/${id}`);
   
-  export const createProductAPI = async (data: { product_added_by: number; product_name: string; description?: string; price: number; tax_id?: number; discount_id?: number }) => 
-    await axios.post('/product', data);
+  export const createProductAPI = async (data:Object) => 
+    await axios.post('/products', data);
   
   export const updateProductAPI = async (id: number, data: { product_name?: string; description?: string; price?: number; tax_id?: number; discount_id?: number }) => 
     await axios.put(`/product/${id}`, data);

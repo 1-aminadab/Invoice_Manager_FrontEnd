@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import Select from 'react-select';
+import axios from 'axios';
+import { deleteDiscountAPI, getDiscountAPI, updateDiscountAPI } from '@/app/apis';
 
 export interface Discount {
   discount_id?: number;
@@ -11,47 +13,81 @@ export interface Discount {
   discount_value: number;
 }
 
-// Sample discount data, replace this with actual data fetching logic
-const initialDiscount: Discount = {
-  discount_id: 1,
-  discount_added_by: 100,
-  discount_type: 'Percentage',
-  discount_value: 10.0,
-};
-
 const discountOptions = [
   { value: 'Percentage', label: 'Percentage' },
   { value: 'Fixed Amount', label: 'Fixed Amount' },
 ];
 
-const DiscountCard: React.FC<{ id: number }> = () => {
-  const [discount, setDiscount] = useState<Discount>(initialDiscount);
+const DiscountCard: React.FC<{ id: number; }> = ({ id}) => {
+  const [discount, setDiscount] = useState<Discount | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDiscount = async () => {
+      try {
+        const response = await getDiscountAPI(id);
+        console.log('====================================');
+        console.log(response.data.data);
+        console.log('====================================');
+        setDiscount(response.data.data);
+        setMessage('Discount fetched successfully.');
+      } catch (error) {
+        console.error('Error fetching discount:', error);
+        setMessage('Error fetching discount.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchDiscount();
+  }, [id]);
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
-  const handleDeleteClick = () => {
-    // Simulate a delete action, in a real application you would make an API call here
-    console.log('Discount deleted:', discount.discount_id);
-    setDiscount({ discount_id: undefined, discount_added_by: 0, discount_type: '', discount_value: 0 });
+  const handleDeleteClick = async () => {
+    try {
+      await deleteDiscountAPI(id);
+      
+      setMessage('Discount deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting discount:', error);
+      setMessage('Error deleting discount.');
+    }
   };
 
-  const handleSaveClick = () => {
-    // Simulate a save action, in a real application you would make an API call here
-    console.log('Discount updated:', discount);
-    setIsEditing(false);
+  const handleSaveClick = async () => {
+    try {
+      if (discount) {
+        await updateDiscountAPI(id, discount);
+        setIsEditing(false);
+        setMessage('Discount updated successfully.');
+      }
+    } catch (error) {
+      console.error('Error updating discount:', error);
+      setMessage('Error updating discount.');
+    }
   };
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setDiscount({ ...discount, [name]: value });
+    setDiscount((prevDiscount) => (prevDiscount ? { ...prevDiscount, [name]: value } : null));
   };
 
   const handleSelectChange = (selectedOption: any) => {
-    setDiscount({ ...discount, discount_type: selectedOption.value });
+    setDiscount((prevDiscount) => (prevDiscount ? { ...prevDiscount, discount_type: selectedOption.value } : null));
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!discount) {
+    return <div>No discount found.</div>;
+  }
 
   return (
     <Card className="shadow-md p-4">
@@ -60,6 +96,7 @@ const DiscountCard: React.FC<{ id: number }> = () => {
         <CardDescription>Manage discount information</CardDescription>
       </CardHeader>
       <CardContent>
+        {message && <p>{message}</p>}
         {isEditing ? (
           <div className="space-y-2">
             <Select
@@ -90,6 +127,6 @@ const DiscountCard: React.FC<{ id: number }> = () => {
       </CardContent>
     </Card>
   );
-}
+};
 
 export default DiscountCard;

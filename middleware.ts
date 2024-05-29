@@ -51,7 +51,8 @@ export async function middleware(request: NextRequest) {
     // console.log('====================================');
     // console.log("Attempting to refresh token");
     // console.log('====================================');
-    return NextResponse.redirect(new URL('/signin', request.url));
+   // return NextResponse.redirect(new URL('/signin', request.url));
+    return NextResponse.next()
   }else if(refreshToken && accessToken && path !== "/signin" && path !== "/signup"){
     return NextResponse.next()
   }
@@ -62,5 +63,5 @@ export async function middleware(request: NextRequest) {
   // }
 
   // Allow the request to proceed
- // return NextResponse.next();
+ return NextResponse.next();
 }

@@ -46,42 +46,57 @@ interface PrintableProps {
     ]
   };
 function InvoiceSheet() {
-  const {newPayment, newInvoiceItems,invoiceCustomer} = useSelector((store:RootState)=>store.invoice)
-  const {user} = useSelector((store:RootState)=>store.user)
+  const { newPayment, newInvoiceItems, invoiceCustomer } = useSelector((store: RootState) => store.invoice);
+  const { user } = useSelector((store: RootState) => store.user);
   console.log('====================================');
   console.log("the user", user);
   console.log('====================================');
-  const productIds = newInvoiceItems.map((item)=>{
-    return {
-      id:item.product_id,
-      quantity: item.quantity
-    }
-  })
+
+  const productIds = newInvoiceItems.map((item) => ({
+    id: item.product_id,
+    quantity: item.quantity,
+  }));
   const priceSummery = invoiceCalculator(productIds)
     // handle pdf downlaod 
     const componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
       content: () => componentRef.current,
     });
-  // handle excel download
+  
+ 
+
+  // Handle Excel download
   const fileName = 'invoice';
 
-  // Create worksheets from the data
-  const itemsSheet = XLSX.utils.json_to_sheet(data.items, { header: ["productId", "description", "quantity", "price"] });
-  const billToSheet = XLSX.utils.json_to_sheet(data.billTo, { header: ["id", "name", "address"] });
-  const billFromSheet = XLSX.utils.json_to_sheet(data.billFrom, { header: ["id", "name", "address"] });
-  
-  // Create a new workbook
+  // Combine data into a single sheet (Method 1)
+  const combinedData = [
+    ...data.billTo,
+    ...data.billFrom,
+    ...data.items.map((item) => ({
+      productId: item.productId,
+      description: item.description,
+      quantity: item.quantity,
+      price: item.price,
+    })),
+  ];
+
+  const combinedSheet = XLSX.utils.json_to_sheet(combinedData, {
+    header: [
+      "id", // Assuming consistent meaning in billTo and billFrom
+      "name", // Assuming consistent meaning in billTo and billFrom
+      "address", // Assuming consistent meaning in billTo and billFrom
+      "productId",
+      "description",
+      "quantity",
+      "price",
+    ],
+  });
+
+  // Create a new workbook and write to buffer
   const workbook = XLSX.utils.book_new();
-  
-  // Append sheets to the workbook
-  XLSX.utils.book_append_sheet(workbook, billToSheet, 'Bill To');
-  XLSX.utils.book_append_sheet(workbook, billFromSheet, 'Bill From');
-  XLSX.utils.book_append_sheet(workbook, itemsSheet, 'Items');
-  
-  // Write the workbook to a buffer
+  XLSX.utils.book_append_sheet(workbook, combinedSheet, 'Invoice'); // Rename sheet to 'Invoice'
   const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-  
+
   // Handle download
   const handleDownload = () => {
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });

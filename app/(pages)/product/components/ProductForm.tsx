@@ -13,7 +13,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectI
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/text-area";
 import { Discount, Product, Tax } from "@/app/types/type";
-import { getDiscountsAPI, getProductsAPI, getTaxesAPI } from "@/app/apis";
+import { createProductAPI, getDiscountsAPI, getProductsAPI, getTaxesAPI } from "@/app/apis";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/lib/store";
 
 const ProductForm: React.FC = () => {
   const [product_name, setProductName] = useState<string>("");
@@ -26,8 +28,9 @@ const ProductForm: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
-
+  const {user} = useSelector((store:RootState)=>store.user)
   useEffect(() => {
+  
     const fetchData = async () => {
       try {
         const taxResponse = await getTaxesAPI()
@@ -43,7 +46,6 @@ const ProductForm: React.FC = () => {
     };
     fetchData();
   }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product_name || !product_description || unit_price <= 0 || unit_price > 10000) {
@@ -52,6 +54,7 @@ const ProductForm: React.FC = () => {
     }
 
     const newProduct = {
+      product_added_by:user?.user_id,
       product_name,
       description: product_description,
       price: unit_price,
@@ -60,7 +63,10 @@ const ProductForm: React.FC = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/products", newProduct);
+      const response = await createProductAPI(newProduct)
+      console.log('====================================');
+      console.log(response.data);
+      console.log('====================================');
       setProducts([...products, response.data]);
       setMessage("Product added successfully.");
       setError("");
